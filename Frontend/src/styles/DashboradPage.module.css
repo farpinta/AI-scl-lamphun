@@ -1,5 +1,7 @@
 .container {
   padding: 20px;
+  background-color: var(--color-bg-page);
+  min-height: 100vh;
 }
 
 .cardGrid {
@@ -12,29 +14,28 @@
 
 .chartSection {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* แบ่งคอลลัมน์ */
+  grid-template-columns: 1fr 1fr;
   margin-left: 24px;
   gap: 24px;
 }
 
 .chartWrapper {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .mapWrapper {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   height: 450px;
 }
 
-/* Responsive สำหรับหน้าจอเล็ก */
 @media (max-width: 1024px) {
   .chartSection {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
 }

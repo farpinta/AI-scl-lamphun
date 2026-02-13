@@ -1,51 +1,101 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import styles from '../styles/MapView.module.css';
 
-// Fix default marker icon issue in React-Leaflet
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+// --- Configuration ---
+const CUSTOM_ICON = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', 
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+  popupAnchor: [0, -30],
+  shadowSize: [41, 41]
 });
 
-L.Marker.prototype.options.icon = DefaultIcon;
+const DEFAULT_CENTER: [number, number] = [18.598899,99.031880];
 
-interface MapViewProps {
-  latitude?: number;
-  longitude?: number;
-  stationName?: string;
+// --- Types ---
+export interface StationData {
+  id: string | number;
+  name: string;
+  lat: number;
+  lng: number;
+  status?: 'active' | 'inactive';
 }
 
-function MapView({ 
-  latitude = 18.7883, // ละติจูดลำพูน
-  longitude = 99.0085, // ลองจิจูดลำพูน
-  stationName = "สถานีตรวจวัด" 
-}: MapViewProps) {
+interface MapViewProps {
+  stations: StationData[];
+}
+
+// --- Helper Component ---
+const FitBoundsToMarkers = ({ stations }: { stations: StationData[] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (stations.length === 0) return;
+    const bounds = L.latLngBounds(stations.map(s => [s.lat, s.lng]));
+    map.fitBounds(bounds, { padding: [50, 50] });
+  }, [stations, map]);
+
+  return null;
+};
+
+// --- Main Component ---
+function MapView({ stations = [] }: MapViewProps) {
+  
+  const handleViewDetails = (id: string | number) => {
+      console.log("Navigating to sensor details:", id);
+  };
+
   return (
     <div className={styles.mapContainer}>
       <MapContainer
-        center={[latitude, longitude]}
-        zoom={13}
-        scrollWheelZoom={false}
-        style={{ height: '100%', width: '100%', borderRadius: '8px' }}
+        center={DEFAULT_CENTER}
+        zoom={10}
+        scrollWheelZoom={true}
+        style={{ height: '100%', width: '100%' }} 
+        zoomControl={false} 
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; CARTO'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-        <Marker position={[latitude, longitude]}>
-          <Popup>
-            <strong>{stationName}</strong>
-            <br />
-            ตำแหน่ง: {latitude.toFixed(4)}, {longitude.toFixed(4)}
-          </Popup>
-        </Marker>
+
+        <FitBoundsToMarkers stations={stations} />
+        
+        {stations.map((station) => (
+          <Marker 
+            key={station.id} 
+            position={[station.lat, station.lng]} 
+            icon={CUSTOM_ICON}
+          >
+            <Popup minWidth={180}>
+              {/* ใช้ className แทน style */}
+              <div className={styles.popupContainer}>
+                
+                <h4 className={styles.popupTitle}>
+                  {station.name}
+                </h4>
+                
+                <div className={styles.popupInfo}>
+                  <div><strong>ID:</strong> {station.id}</div>
+                  <div><strong>Lat:</strong> {station.lat.toFixed(4)}</div>
+                  <div><strong>Lng:</strong> {station.lng.toFixed(4)}</div>
+                </div>
+
+                {/* <button 
+                    className={styles.popupButton}
+                    onClick={() => handleViewDetails(station.id)}
+                >
+                    ดูข้อมูลเซนเซอร์
+                </button> */}
+                
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
     </div>
   );

@@ -1,45 +1,86 @@
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import DashboardPage from '../pages/DashboardPage'; // เช็คชื่อไฟล์ดีๆ นะครับ (Dashboard)
+import DashboardPage from '../pages/DashboardPage';
 import Station from '../pages/Station';
+import styles from '../styles/NavBar.module.css';
 
-// 1. สร้างส่วน "หน้าตาปุ่มเมนู" ไว้เป็นตัวแปรข้างบน (เพื่อให้โค้ดอ่านง่าย)
+// Component ส่วนเมนู
 const MenuBar = () => {
   const location = useLocation();
   
-  // ฟังก์ชันเช็คว่าอยู่หน้าไหนให้ปุ่มเป็นสีเข้ม
-  const isActive = (path: string) => 
-    location.pathname === path ? "bg-blue-800 shadow-inner" : "hover:bg-blue-800";
+  // Helper function: เช็ค Path เพื่อเลือก Class
+  const getNavClass = (path: string) => {
+    // ถ้า URL ปัจจุบันตรงกับ path ที่ส่งมา ให้เพิ่ม class .active
+    return location.pathname === path 
+      ? `${styles.navItem} ${styles.active}` 
+      : styles.navItem;
+  };
 
   return (
-    <nav className="bg-blue-900 text-white p-4 flex gap-4 mb-4 rounded-lg shadow-md">
-      {/* ปุ่ม Dashboard */}
-      <Link to="/" className={`flex flex-col px-4 py-2 rounded-md transition-all ${isActive('/')}`}>
-        <p className='font-bold'>แดชบอร์ด</p>
-        <p className='text-xs text-blue-200 font-light'>ภาพรวมของระบบ</p>
-      </Link>
+    <nav className={styles.navbarContainer}>
+      
+      {/* 1. ปุ่ม Logout (ซ้ายสุด) */}
+      <div>
+        <button 
+          className={styles.logoutBtn} 
+          onClick={() => {
+            if(confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+          }}
+        >
+          Logout
+        </button>
+      </div>
 
-      {/* ปุ่ม Station */}
-      <Link to="/station" className={`flex flex-col px-4 py-2 rounded-md transition-all ${isActive('/station')}`}>
-        <p className='font-bold'>ข้อมูลสถานี</p>
-        <p className='text-xs text-blue-200 font-light'>ข้อมูลโดยละเอียด</p>
-      </Link>
+      {/* 2. กลุ่มเมนู (ขวาสุด) */}
+      <div className={styles.menuGroup}>
+        
+        {/* เมนู 1: แดชบอร์ด */}
+        <Link to="/" className={getNavClass('/')}>
+          <span className={styles.navTitle}>แดชบอร์ด</span>
+          <span className={styles.navSubtitle}>ภาพรวมของระบบ</span>
+        </Link>
+
+        {/* เมนู 2: แผนที่ GIS (สมมติ) */}
+        <Link to="/map" className={getNavClass('/map')}>
+          <span className={styles.navTitle}>แผนที่ GIS</span>
+          <span className={styles.navSubtitle}>มุมมองแผนที่</span>
+        </Link>
+
+        {/* เมนู 3: ข้อมูลสถานี */}
+        <Link to="/station" className={getNavClass('/station')}>
+          <span className={styles.navTitle}>ข้อมูลสถานี</span>
+          <span className={styles.navSubtitle}>ข้อมูลโดยละเอียด</span>
+        </Link>
+        
+        {/* เมนู 4: การตั้งค่า (สมมติ) */}
+        <Link to="/settings" className={getNavClass('/settings')}>
+          <span className={styles.navTitle}>การตั้งค่า</span>
+          <span className={styles.navSubtitle}>หน้าต่างตั้งค่า</span>
+        </Link>
+
+      </div>
+
     </nav>
   );
 };
 
-// 2. Component หลัก (ที่จะ Export ไปใช้)
+// Component หลัก
 function Navbar() {
   return (
-    <div className="container-layout">
+    <div className={styles.layoutContainer}>
       
-      {/* ส่วนที่ 1: แสดงเมนูอยู่ด้านบนเสมอ */}
+      {/* ส่วนบน: Navbar */}
       <MenuBar />
 
-      {/* ส่วนที่ 2: พื้นที่แสดงเนื้อหาที่จะเปลี่ยนไปตาม URL */}
-      <div className="content-area">
+      {/* ส่วนล่าง: เนื้อหา */}
+      <div className={styles.contentArea}>
         <Routes>
           <Route path='/' element={<DashboardPage />} />
           <Route path='/station' element={<Station />} />
+          <Route path='/map' element={<div className="text-h1">หน้าแผนที่ GIS (Demo)</div>} />
+          <Route path='/settings' element={<div className="text-h1">หน้าการตั้งค่า (Demo)</div>} />
         </Routes>
       </div>
 

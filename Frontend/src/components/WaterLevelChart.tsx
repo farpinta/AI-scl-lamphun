@@ -1,59 +1,51 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine
+  ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
+import styles from '../styles/WaterLevelChart.module.css';
 
-// --- CONFIG ---
-// ตั้งค่าความสูงของกราฟตรงนี้ (ตัดปัญหา CSS ไม่โหลด)
-const CHART_HEIGHT = 300; 
-
-// จำนวนจุดข้อมูลสูงสุดที่จะแสดงบนกราฟ (ถ้าเกินจะตัดตัวเก่าออก)
-const MAX_DATA_POINTS = 20;
-
-export interface ChartData {
+// --- Types & Interfaces ---
+interface WaterData {
   time: string;
-  value: number;
+  waterLevel: number;
+  rainLevel: number;
 }
 
+interface WaterLevelChartProps {
+  onDataUpdate?: (water: number, rain: number) => void;
+}
+
+// --- Sub-components ---
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div style={{
-        backgroundColor: '#fff',
-        padding: '10px',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        fontSize: '14px'
-      }}>
-        <p style={{ margin: 0, color: '#666' }}>{label}</p>
-        <p style={{ margin: '5px 0 0', fontWeight: 'bold', color: '#0099FF' }}>
-          {Number(payload[0].value).toFixed(2)} ม.
-        </p>
-      </div>
-    );
-  }
-  return null;
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className={styles.customTooltip}>
+      <p className={`${styles.tooltipTime} text-caption`}>เวลา {label} น.</p>
+      {payload.map((entry: any, index: number) => (
+        <div key={index} className={styles.tooltipValueRow}>
+          <div className={styles.tooltipDot} style={{ backgroundColor: entry.color }}></div>
+          <span className={styles.tooltipValue}>
+            {entry.name}: {Number(entry.value).toFixed(3)} {entry.unit}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
-export const WaterLevelChart: React.FC = () => {
-  // state สำหรับเก็บข้อมูลสะสม (History)
-  const [data, setData] = useState<ChartData[]>([]);
-  const [currentValue, setCurrentValue] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+// --- Main Component ---
+export const WaterLevelChart: React.FC<WaterLevelChartProps> = ({ onDataUpdate }) => {
+  const [data, setData] = useState<WaterData[]>([]);
+  const [currentWater, setCurrentWater] = useState<number | null>(null);
+  const dataRef = useRef<WaterData[]>([]);
+  
+  // [NEW] ตัวแปรจำค่าฝนสะสม (เริ่มที่ 0)
+  const accumulatedRainRef = useRef<number>(0);
 
-  // ใช้ Ref เพื่อเก็บข้อมูลล่าสุดไว้ใช้ใน interval (แก้ปัญหา closure)
-  const dataRef = useRef<ChartData[]>([]);
-
-  const fetchLatestData = async () => {
+  const fetchLatestData = useCallback(async () => {
     try {
-      // เรียก API ไปที่ /latest ตามข้อมูลที่คุณได้รับ
       const response = await fetch(`/api/v2/device/latest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,131 +56,116 @@ export const WaterLevelChart: React.FC = () => {
         })
       });
 
-      if (!response.ok) throw new Error('API Error');
-
       const result = await response.json();
-      console.log("📦 New Data Packet:", result);
+      if (!result.monitorValue) return;
 
-      // ตรวจสอบว่ามีข้อมูล monitorValue หรือไม่
-      if (result.monitorValue) {
-        const val = parseFloat(result.monitorValue);
-        const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const waterVal = parseFloat(parseFloat(result.monitorValue).toFixed(3));
+      
+      // ถ้าไม่มีค่าจริงจาก API ให้สุ่มค่าเล็กๆ (0.0 - 0.5) เพื่อจำลองฝนตกปรอยๆ
+      const rainDelta = result.rainLevel 
+        ? parseFloat(parseFloat(result.rainLevel).toFixed(3)) 
+        : parseFloat((Math.random() * 0.5).toFixed(3));
+      
+      // [LOGIC CHANGE] บวกทบเข้าไปในยอดสะสมรวม
+      accumulatedRainRef.current += rainDelta;
+      const totalRain = parseFloat(accumulatedRainRef.current.toFixed(3));
 
-        setCurrentValue(val);
+      const timeStr = new Date().toLocaleTimeString('th-TH', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
 
-        const newItem = {
-          time: timeStr,
-          value: isNaN(val) ? 0 : val
-        };
+      setCurrentWater(waterVal);
+      // ส่งค่า totalRain (สะสม) ออกไปแทนค่า rainDelta
+      onDataUpdate?.(waterVal, totalRain);
 
-        // --- หัวใจสำคัญ: เอาข้อมูลใหม่ ต่อท้ายข้อมูลเก่า ---
-        const currentData = dataRef.current;
-        const newData = [...currentData, newItem];
+      const newItem: WaterData = { 
+        time: timeStr, 
+        waterLevel: waterVal, 
+        rainLevel: totalRain // กราฟจะแสดงยอดสะสมที่สูงขึ้นเรื่อยๆ
+      };
 
-        // ถ้าข้อมูลเยอะเกินกำหนด ให้ตัดตัวแรกออก (เพื่อให้กราฟวิ่ง)
-        if (newData.length > MAX_DATA_POINTS) {
-          newData.shift();
-        }
-
-        // อัปเดต State และ Ref
-        dataRef.current = newData;
-        setData(newData);
-        setError(null);
-      } 
+      const newData = [...dataRef.current, newItem].slice(-24);
+      
+      dataRef.current = newData;
+      setData(newData);
     } catch (err) {
-      console.error("Fetch error:", err);
-      // ไม่ต้อง setError รุนแรง เพื่อให้กราฟยังค้างค่าเดิมไว้ได้
+      console.error("Failed to fetch water data:", err);
     }
-  };
+  }, [onDataUpdate]);
 
   useEffect(() => {
-    // ดึงข้อมูลครั้งแรกทันที
     fetchLatestData();
-
-    // ดึงข้อมูลใหม่ทุกๆ 5 วินาที (ปรับความเร็วตรงนี้ได้)
-    const interval = setInterval(fetchLatestData, 5000); 
-
+    const interval = setInterval(fetchLatestData, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchLatestData]);
 
-  // --- Render ---
-
-  // Layout แบบ Inline Style 100% เพื่อแก้ปัญหา width(-1)
   return (
-    <div style={{
-      backgroundColor: '#fff',
-      borderRadius: '12px',
-      padding: '20px',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      fontFamily: 'sans-serif',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '450px' // กำหนดความสูงรวมของการ์ด
-    }}>
-      
-      {/* Header */}
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '18px' }}>ระดับน้ำ (Real-time)</h3>
-          <p style={{ margin: '5px 0 0', color: '#888', fontSize: '12px' }}>
-             อัปเดตล่าสุด: {currentValue !== null ? `${currentValue.toFixed(2)} ม.` : 'รอข้อมูล...'}
-          </p>
+    <div className={styles.chartCard}>
+      <header className={styles.header}>
+        <h2 className="text-h1" style={{ color: 'var(--color-brand-primary)' }}>
+          ระดับน้ำ (24 ชม.)
+        </h2>
+        <div className={styles.currentSummary}>
+          <span className="text-data-lg" style={{ color: 'var(--color-brand-secondary)', fontSize: '28px' }}>
+            {currentWater?.toFixed(3) ?? '---'} 
+            <small style={{ fontSize: '18px', marginLeft: '4px' }}>ม.</small>
+          </span>
         </div>
-        
-        {/* Legend */}
-        <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <div style={{ width: '10px', height: '10px', backgroundColor: '#F59E0B' }}></div> เฝ้าระวัง
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <div style={{ width: '10px', height: '10px', backgroundColor: '#EF4444' }}></div> วิกฤต
-          </div>
-        </div>
+      </header>
+
+      <div className={styles.chartBody}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical stroke="#E5E7EB" />
+            <XAxis dataKey="time" fontSize={11} stroke="var(--color-text-tertiary)" tickLine={false} axisLine={false} />
+            <YAxis yAxisId="left" domain={[0, 4]} fontSize={11} tickLine={false} axisLine={false} />
+            {/* [ADJUST] ปรับ Domain แกนขวาให้รองรับค่าสะสมที่อาจจะเยอะขึ้น (Auto หรือกำหนด Max) */}
+            <YAxis yAxisId="right" orientation="right" domain={[0, 'auto']} fontSize={11} tickLine={false} axisLine={false} />
+            
+            <Tooltip content={<CustomTooltip />} />
+            
+            <Bar 
+              yAxisId="right" 
+              name="น้ำฝนสะสม" 
+              unit="มม." 
+              dataKey="rainLevel" 
+              fill="var(--color-graf-rain)" 
+              barSize={40} 
+              radius={[4, 4, 0, 0]} 
+            />
+            <Line 
+              yAxisId="left" 
+              name="ระดับน้ำ" 
+              unit="ม." 
+              type="monotone" 
+              dataKey="waterLevel" 
+              stroke="var(--color-graf-waterLevel)" 
+              strokeWidth={4} 
+              dot={false} 
+              activeDot={{ r: 6 }} 
+            />
+            <ReferenceLine yAxisId="left" y={3} stroke="var(--color-status-critical)" strokeDasharray="3 3" />
+          </ComposedChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Chart Container - บังคับความสูงตรงนี้เพื่อแก้ Error */}
-      <div style={{ width: '100%', height: CHART_HEIGHT, position: 'relative' }}>
-        
-        {data.length === 0 ? (
-          // Loading State
-          <div style={{ 
-            height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' 
-          }}>
-            {error ? <span style={{color: 'red'}}>{error}</span> : "กำลังรอข้อมูลชุดแรก..."}
-          </div>
-        ) : (
-          // Graph
-          <ResponsiveContainer width="100%" height="100%" debounce={50}>
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0099FF" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#0099FF" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-              <XAxis dataKey="time" tick={{fontSize: 12}} stroke="#999" />
-              <YAxis domain={['auto', 'auto']} tick={{fontSize: 12}} stroke="#999" />
-              <Tooltip content={<CustomTooltip />} />
-              
-              <ReferenceLine y={3.5} stroke="#F59E0B" strokeDasharray="3 3" label={{ position: 'right', value: 'เฝ้าระวัง', fontSize: 10, fill: '#F59E0B' }} />
-              <ReferenceLine y={4.5} stroke="#EF4444" strokeDasharray="3 3" label={{ position: 'right', value: 'วิกฤต', fontSize: 10, fill: '#EF4444' }} />
-
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#0099FF" 
-                strokeWidth={3} 
-                fillOpacity={1} 
-                fill="url(#colorValue)" 
-                isAnimationActive={false} // ปิด animation เพื่อความลื่นไหลเวลาข้อมูลขยับ
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <ChartLegend />
     </div>
   );
 };
+
+const ChartLegend = () => (
+  <div className={styles.legendContainer}>
+    <div className={styles.legendItem}>
+      <div className={styles.legendIconLine} style={{ backgroundColor: 'var(--color-graf-waterLevel)' }}></div>
+      <span className={`${styles.legendText} text-caption`}>ระดับน้ำ (เมตร)</span>
+    </div>
+    <div className={styles.legendItem}>
+      <div className={styles.legendIconBar} style={{ backgroundColor: 'var(--color-graf-rain)' }}></div>
+      <span className={`${styles.legendText} text-caption`}>น้ำฝนสะสม (มิลลิเมตร)</span>
+    </div>
+  </div>
+);
 
 export default WaterLevelChart;

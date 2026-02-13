@@ -26,7 +26,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://100.112.255.31:3000/api/v2/auth/login', {
+            const response = await fetch('/api/v2/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

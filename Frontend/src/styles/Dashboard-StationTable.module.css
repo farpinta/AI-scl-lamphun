@@ -1,0 +1,134 @@
+/* components/StationTable/StationTable.module.css */
+
+.container {
+  width: 100%;
+  font-family: var(--font-ui);
+  margin-top: 20px;
+}
+
+/* --- Export Button --- */
+.headerActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.exportBtn {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-text-disabled);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.exportBtn:hover {
+  border-color: var(--color-brand-primary);
+  color: var(--color-brand-primary);
+}
+
+/* --- Grid Layout Definitions --- */
+.gridRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr; /* Adjust ratios based on content */
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+/* --- Table Header --- */
+.tableHeader {
+  background-color: #6B7280; /* Using dark grey from image */
+  color: var(--color-text-onBrand);
+  border-radius: 30px; /* Highly rounded as per design */
+  height: 48px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerCell {
+  text-align: center;
+}
+
+/* --- Data Rows (Cards) --- */
+.dataRow {
+  background-color: var(--color-bg-surface);
+  border-radius: 16px; /* Card-like rounded corners */
+  height: 64px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dataRow:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cell {
+  text-align: center;
+}
+
+/* --- Typography Specifics --- */
+.timestamp {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  text-align: left; /* Timestamp aligns left in the column based on some designs, or center */
+  padding-left: 16px; 
+}
+
+.value {
+  font-family: var(--font-data); /* IBM Plex Mono */
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 15px;
+}
+
+/* --- Status Badges --- */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 100px;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Status: Normal */
+.statusNormal {
+  background-color: #D1FAE5;
+  color: var(--color-status-normal);
+}
+.statusNormal .statusDot { background-color: var(--color-status-normal); }
+
+/* Status: Warning */
+.statusWarning {
+  background-color: #FEF3C7; /* Pale Yellow */
+  color: #B45309; /* Darker Orange */
+}
+.statusWarning .statusDot { background-color: var(--color-status-warning); }
+
+/* Status: Critical */
+.statusCritical {
+  background-color: #FEE2E2; /* Pale Red */
+  color: var(--color-status-critical);
+}
+.statusCritical .statusDot { background-color: var(--color-status-critical); }

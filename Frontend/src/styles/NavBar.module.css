@@ -1,0 +1,115 @@
+/* components/Navbar.module.css */
+
+/* 1. คอนเทนเนอร์หลัก (แท่งรางยาวๆ สีเทาอ่อน) */
+.navbarContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #E5E7EB; /* สีเทาอ่อนพื้นหลังราง (ไม่มีใน root ใช้ค่าใกล้เคียง) */
+  border-radius: 50px;       /* ความโค้งของราง */
+  padding: 8px 12px;         /* ระยะห่างขอบรางกับปุ่ม */
+  width: 100%;
+  max-width: 1200px;         /* จำกัดความกว้างไม่ให้ยืดเกินไป */
+  margin: 0 auto 20px auto;  /* จัดกึ่งกลาง + เว้นระยะล่าง */
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-ui); /* ใช้ฟอนต์หลัก */
+}
+
+/* 2. ปุ่ม Logout (ด้านซ้าย) */
+.logoutBtn {
+  background-color: var(--color-bg-surface);
+  border: none;
+  border-radius: 40px;
+  padding: 12px 32px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logoutBtn:hover {
+  background-color: #F9FAFB;
+  transform: translateY(-1px);
+}
+
+/* 3. กลุ่มเมนู (ด้านขวา) */
+.menuGroup {
+  display: flex;
+  gap: 12px; /* ระยะห่างระหว่างแคปซูลเมนู */
+}
+
+/* 4. รายการเมนู (Menu Item) - สถานะปกติ (สีขาว) */
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-surface);
+  border-radius: 40px;       /* ความโค้งแคปซูลเมนู */
+  padding: 8px 32px;         /* ปรับ padding ให้กว้างเหมือนรูป */
+  text-decoration: none;
+  min-width: 140px;          /* ความกว้างขั้นต่ำของปุ่ม */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid transparent; /* กันการกระตุกของ border */
+  box-shadow: var(--shadow-sm);
+}
+
+/* ข้อความบรรทัดบน (หัวข้อ) */
+.navTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+/* ข้อความบรรทัดล่าง (คำอธิบาย) */
+.navSubtitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  line-height: 1.2;
+}
+
+/* 5. รายการเมนู - สถานะ Active (สีน้ำเงิน) */
+.active {
+  background-color: var(--color-brand-primary); /* #1E40AF */
+  box-shadow: var(--shadow-md);
+}
+
+/* เปลี่ยนสีตัวหนังสือเมื่อ Active เป็นสีขาว */
+.active .navTitle {
+  color: var(--color-text-onBrand); /* #FFFFFF */
+}
+
+.active .navSubtitle {
+  color: rgba(255, 255, 255, 0.8); /* สีขาวจางนิดหน่อย */
+}
+
+/* Hover Effect (เฉพาะตัวที่ไม่ได้ Active) */
+.navItem:not(.active):hover {
+  background-color: #F9FAFB;
+  transform: translateY(-2px);
+}
+
+/* Layout Wrapper สำหรับหน้า (ถ้าต้องการ) */
+.layoutContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg-page); /* #F3F4F6 */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.contentArea {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}

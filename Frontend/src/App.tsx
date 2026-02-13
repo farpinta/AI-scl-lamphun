@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import StationManagement from './components/Station.tsx'
-import DashboardPage from './pages/DashboardPage.tsx'
+import { BrowserRouter } from 'react-router-dom' // [เพิ่ม] ต้อง Import ตัวนี้
+import Navbar from './components/Navbar'         // [เพิ่ม] เรียกใช้ Navbar ที่ทำไว้
 import LoginPage from './pages/LoginPage.tsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number | null>(null); 
   const [isLoading, setIsLoading] = useState(true);
 
   const checkSession = async () => {
@@ -25,8 +25,8 @@ function App() {
       });
 
       if (res.ok) {
-        const userData = await res.json();
-        setUserId(userData.id);
+         const userData = await res.json();
+         setUserId(userData.id);
         setIsLoggedIn(true);
       } else {
         localStorage.removeItem('accessToken');
@@ -46,32 +46,27 @@ function App() {
   }, []);
 
   const handleLoginSuccess = (id: number) => {
-    setUserId(id);
+     setUserId(id);
     setIsLoggedIn(true);
   };
 
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
+      <div className="flex justify-center items-center h-screen">
         Loading...
       </div>
     );
   }
 
   return (
-    <>
+    <BrowserRouter> 
+    
       {!isLoggedIn ? (
         <LoginPage onLoginSuccess={handleLoginSuccess} />
       ) : (
-        <DashboardPage />
+        <Navbar />
       )}
-
-    </>
+    </BrowserRouter>
   );
 }
 
