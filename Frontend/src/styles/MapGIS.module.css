@@ -1,0 +1,314 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  font-family: var(--font-ui), "Prompt", sans-serif;
+  overflow: hidden;
+  background-color: var(--color-bg-page);
+}
+
+/* --- Top Navigation --- */
+.topNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--brand-secondary-blen);
+  color: white;
+  z-index: 1010; /* Above map */
+  box-shadow: var(--shadow-md);
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.navMenuWrap {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px;
+  border-radius: 40px;
+  backdrop-filter: blur(8px);
+}
+
+.navMenu {
+  display: flex;
+  gap: 4px;
+}
+
+.navItem {
+  border: none;
+  background: transparent;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navActive {
+  background: var(--color-brand-primary);
+  color: var(--color-text-onBrand);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Map Area --- */
+.mapContainer {
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.mapCanvas {
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Base layer */
+}
+
+/* --- Left Overlay (Stations) --- */
+.leftOverlay {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 280px;
+  pointer-events: none; /* Let user click map through empty spaces */
+}
+
+.leftOverlay > * {
+  pointer-events: auto; /* Enable clicks on panels */
+}
+
+.searchTitle {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-darkBlue);
+  margin-bottom: -8px;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.searchIcon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+.summaryCard {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.statusList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.statusList li {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* --- Right Overlay (Weather) --- */
+.rightOverlay {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.rightOverlay > * {
+  pointer-events: auto;
+}
+
+.weatherIconTop {
+  font-size: 32px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.weatherPanel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 20px;
+  width: 320px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+}
+
+.weatherTitle {
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.hourlyList {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.hourlyItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+}
+
+.dailyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dailyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* --- Popups & Markers --- */
+.customMarker {
+  background: transparent;
+  border: none;
+}
+
+.popupContent {
+  padding: 4px;
+  min-width: 200px;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--color-darkBlue);
+}
+
+.dotIndicator {
+  width: 8px;
+  height: 8px;
+  background: var(--color-status-warning);
+  border-radius: 50%;
+}
+
+.popupSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.popupDataRow {
+  display: flex;
+  gap: 16px;
+}
+
+.dataCol {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.dataCol strong {
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.dataCol small {
+  font-size: 10px;
+  font-weight: normal;
+}
+
+/* Warning overlay floating on map */
+.alertTriangle {
+  position: absolute;
+  z-index: 1000;
+  font-size: 24px;
+  filter: drop-shadow(0 4px 6px rgba(239, 68, 68, 0.4));
+  pointer-events: none;
+}
+
+/* --- Colors (Using your variables or fallback) --- */
+.textBlue { color: var(--color-brand-primary); }
+.textRed { color: var(--color-status-critical); }
+.textYellow { color: var(--color-status-warning); }
+.textGreen { color: var(--color-status-normal); }
+.textGray { color: var(--color-status-device-offline); }
+
+@media (max-width: 768px) {
+  .leftOverlay, .rightOverlay {
+    position: relative; /* ให้ไหลตามกัน ไม่ลอยทับแผนที่ */
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+    pointer-events: auto;
+  }
+  
+  .weatherPanel {
+    width: 100%; /* แผงอากาศเต็มจอ */
+  }
+
+  .topNav {
+    flex-direction: column; /* แยกโลโก้กับเมนูออกจากกัน */
+    gap: 10px;
+  }
+}

@@ -2,6 +2,7 @@ import { Routes, Route, Link, useLocation } from "react-router-dom";
 import DashboardPage from '../pages/DashboardPage';
 import Station from '../pages/Station';
 import styles from '../styles/NavBar.module.css';
+import MapGIS from "./MapGIS";
 
 // Component ส่วนเมนู
 const MenuBar = () => {
@@ -79,7 +80,7 @@ function Navbar() {
         <Routes>
           <Route path='/' element={<DashboardPage />} />
           <Route path='/station' element={<Station />} />
-          <Route path='/map' element={<div className="text-h1">หน้าแผนที่ GIS (Demo)</div>} />
+          <Route path='/map' element={<MapGIS/>} />
           <Route path='/settings' element={<div className="text-h1">หน้าการตั้งค่า (Demo)</div>} />
         </Routes>
       </div>
