@@ -35,7 +35,8 @@ type MainStreamLatestResponse = {
   monitorTime: string
 }
 
-const hourMs = 30 * 60 * 1000
+const fiveMinMs = 5 * 60 * 1000
+const halfHourMs = 30 * 60 * 1000
 const deviceCacheTtlMs = Number(process.env.DEVICE_CACHE_TTL_MS ?? 300000)
 const deviceCacheKey = 'main_stream_devices'
 
@@ -294,7 +295,7 @@ const fetchLatest = async (
 }
 
 
-const storeBatch = async (
+const storeBatchCorrection = async (
   database: PostgresJsDatabase,
   payload: MainStreamBatchResponse
 ) => {
@@ -336,13 +337,19 @@ const storeBatch = async (
     return
   }
 
-  await database
-    .insert(deviceData)
-    .values(rows)
-    .onConflictDoUpdate({
-      target: [deviceData.deviceId, deviceData.monitorTime],
-      set: { monitorValue: sql`excluded."monitorValue"` }
-    })
+  let inserted = 0
+  const chunkSize = 100
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize)
+    const result = await database
+      .insert(deviceData)
+      .values(chunk)
+      .onConflictDoNothing({
+        target: [deviceData.deviceId, deviceData.monitorTime]
+      })
+    inserted += result?.rowCount ?? 0
+  }
+  console.log(`Correction sync: ${inserted} missing rows filled`)
 }
 
 const storeLatest = async (
@@ -381,47 +388,132 @@ const storeLatest = async (
     })
 }
 
-export const startMainStreamSync = (
+const syncLatestForDevices = async (
   database: PostgresJsDatabase,
-  intervalMs: number = hourMs
+  baseUrl: string,
+  mainStreamDevices: MainStreamDevice[]
+) => {
+  const results = await Promise.allSettled(
+    mainStreamDevices.map(async (device) => {
+      try {
+        const latestPayload = await fetchLatest(baseUrl, device)
+        await storeLatest(database, device, latestPayload)
+      } catch (error) {
+        console.error('Main stream latest sync failed for device', device.deviceId, error)
+      }
+    })
+  )
+  const failed = results.filter((r) => r.status === 'rejected').length
+  if (failed > 0) {
+    console.warn(`Latest sync: ${failed} device(s) failed`)
+  }
+}
+
+export const startMainStreamLatestSync = (
+  database: PostgresJsDatabase,
+  intervalMs: number = fiveMinMs
 ) => {
   const baseUrl = process.env.MAIN_STREAM_URL
 
   if (!baseUrl) {
-    console.warn('MAIN_STREAM_URL is not set. Main stream sync disabled.')
+    console.warn('MAIN_STREAM_URL is not set. Latest sync disabled.')
     return
   }
 
+  let running = false
+
   const runSync = async () => {
-    await warmUpDatabase(database)
-    const end = Date.now()
-    const start = end - hourMs
-
-    const mainStreamDevices = await getDevicesWithCacheAndRetry(database)
-
-    if (mainStreamDevices.length === 0) {
-      console.warn('No main stream devices available. Sync skipped.')
+    if (running) {
+      console.warn('Latest sync still running — skipping this tick')
       return
     }
+    running = true
 
     try {
-      const payload = await fetchBatch(baseUrl, mainStreamDevices, start, end)
-      await storeBatch(database, payload)
-      for (const device of mainStreamDevices) {
-        try {
-          const latestPayload = await fetchLatest(baseUrl, device)
-          await storeLatest(database, device, latestPayload)
-        } catch (error) {
-          console.error('Main stream latest sync failed', error)
-        }
+      await warmUpDatabase(database)
+      const mainStreamDevices = await getDevicesWithCacheAndRetry(database)
+
+      if (mainStreamDevices.length === 0) {
+        console.warn('No main stream devices available. Latest sync skipped.')
+        return
       }
-      console.log('Main stream sync completed successfully')
+
+      await syncLatestForDevices(database, baseUrl, mainStreamDevices)
+      console.log('Latest sync completed successfully')
     } catch (error) {
-      console.error('Main stream sync failed', error)
+      console.error('Latest sync failed', error)
+    } finally {
+      running = false
     }
   }
+
+  const scheduleNext = () => {
+    const nextAligned = Math.ceil(Date.now() / intervalMs) * intervalMs
+    const delay = nextAligned - Date.now()
+    setTimeout(async () => {
+      await runSync()
+      scheduleNext()
+    }, delay)
+  }
+
   void runSync()
-  setInterval(runSync, intervalMs)
+  scheduleNext()
+}
+
+export const startMainStreamCorrectionSync = (
+  database: PostgresJsDatabase,
+  intervalMs: number = halfHourMs
+) => {
+  const baseUrl = process.env.MAIN_STREAM_URL
+
+  if (!baseUrl) {
+    console.warn('MAIN_STREAM_URL is not set. Correction sync disabled.')
+    return
+  }
+
+  let running = false
+
+  const runSync = async () => {
+    if (running) {
+      console.warn('Correction sync still running — skipping this tick')
+      return
+    }
+    running = true
+
+    try {
+      await warmUpDatabase(database)
+      const end = Date.now()
+      const start = end - halfHourMs
+
+      const mainStreamDevices = await getDevicesWithCacheAndRetry(database)
+
+      if (mainStreamDevices.length === 0) {
+        console.warn('No main stream devices available. Correction sync skipped.')
+        return
+      }
+
+      try {
+        const payload = await fetchBatch(baseUrl, mainStreamDevices, start, end)
+        await storeBatchCorrection(database, payload)
+      } catch (error) {
+        console.error('Correction sync failed', error)
+      }
+    } finally {
+      running = false
+    }
+  }
+
+  const scheduleNext = () => {
+    const nextAligned = Math.ceil(Date.now() / intervalMs) * intervalMs
+    const delay = nextAligned - Date.now()
+    setTimeout(async () => {
+      await runSync()
+      scheduleNext()
+    }, delay)
+  }
+
+  void runSync()
+  scheduleNext()
 }
 
 const bangkokFormatter = new Intl.DateTimeFormat("sv-SE", {

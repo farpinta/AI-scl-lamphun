@@ -4,7 +4,7 @@ import { authRoutes } from "./api/v2/auth";
 import { deviceRoutes } from "./api/v2/device";
 import { userRoutes } from "./api/v2/user";
 import { initialize } from "./db/database";
-import { startMainStreamSync } from "./services/mainStream";
+import { startMainStreamCorrectionSync, startMainStreamLatestSync } from "./services/mainStream";
 
 export const db = initialize();
 const port = Number(process.env.PORT ?? 3000);
@@ -12,7 +12,8 @@ const port = Number(process.env.PORT ?? 3000);
 db
   .then((database) => {
     console.log("Database connected successfully");
-    startMainStreamSync(database);
+    startMainStreamLatestSync(database);
+    startMainStreamCorrectionSync(database);
   })
   .catch((error) => {
     console.error("Failed to connect to the database", error);

@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia'
 import { jwt } from '@elysiajs/jwt'
 import { db } from '../..'
-import { inArray } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { eq, or } from 'drizzle-orm/sql/expressions/conditions'
 import { sessions, users } from '../../db/schema'
 
@@ -77,36 +77,25 @@ const authRoutes = new Elysia({
             const refreshToken = crypto.randomUUID()
             const refreshExpiresAt = buildRefreshExpiry()
 
-            const existingSessions = await database
-                .select()
-                .from(sessions)
-                .where(eq(sessions.userId, user.id))
-                .orderBy(sessions.expires_at)
-
-            const maxExistingSessions = Math.max(0, sessionLimit - 1)
-            const sessionsToRemove = existingSessions.slice(
-                0,
-                Math.max(0, existingSessions.length - maxExistingSessions)
-            )
-
-            if (sessionsToRemove.length > 0) {
-                await database
-                    .delete(sessions)
-                    .where(
-                        inArray(
-                            sessions.token,
-                            sessionsToRemove
-                                .map((session) => session.token)
-                                .filter((token): token is string => Boolean(token))
-                        )
-                    )
-            }
-
             await database.insert(sessions).values({
                 userId: user.id,
                 token: refreshToken,
                 expires_at: refreshExpiresAt
             })
+
+            await database.execute(
+                sql`
+                WITH keep AS (
+                  SELECT id FROM sessions
+                  WHERE user_id = ${user.id}
+                  ORDER BY expires_at DESC
+                  LIMIT ${sessionLimit}
+                )
+                DELETE FROM sessions
+                WHERE user_id = ${user.id}
+                AND id NOT IN (SELECT id FROM keep)
+                `
+            )
 
             return {
                 accessToken,
@@ -142,14 +131,22 @@ const authRoutes = new Elysia({
 
             const hashedPassword = await Bun.password.hash(password)
 
-            await database.insert(users).values({
-                firstname,
-                lastname,
-                username,
-                email,
-                role,
-                password: hashedPassword
-            })
+            try {
+                await database.insert(users).values({
+                    firstname,
+                    lastname,
+                    username,
+                    email,
+                    role,
+                    password: hashedPassword
+                })
+            } catch (error) {
+                const pgError = error as { code?: string }
+                if (pgError.code === '23505') {
+                    return new Response('User already exists', { status: 409 })
+                }
+                throw error
+            }
 
             return { success: true }
         },

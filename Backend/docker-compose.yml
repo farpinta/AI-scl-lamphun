@@ -1,5 +1,4 @@
-# Use root/example as user/password credentials
-
+---
 services:
   backend:
     image: oven/bun:1
@@ -24,8 +23,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: adminUser123
       POSTGRES_DB: mydb
-    volumes:
-      - data:/var/lib/postgresql/data
 
 volumes:
   data:
