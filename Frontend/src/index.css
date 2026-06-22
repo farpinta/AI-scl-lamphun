@@ -12,8 +12,6 @@
   --color-border-line: #E5E7EB;   
 
   --color-darkBlue:#070F29;
-  --color-darkSlate:#1E293B;
-  --color-brand-deep:#1C398E;
   /* --- Text Colors --- */
   --color-text-primary: #111827;     
   --color-text-secondary: #6B7280;
@@ -41,7 +39,6 @@
 
   /*---Gradient Color*/
   --brand-secondary-blend: linear-gradient(90deg, #1E40AF 0%, #000 100%);
-  --brand-panel-gradient: conic-gradient(from 0deg at 50% 50%, #1C398E -51.92deg, #1E293B 57.44deg, #1D293D 162.69deg, #1C398E 308.08deg, #1E293B 417.44deg);
 }
 
 /* 3. Global Reset */
