@@ -3,6 +3,7 @@ import DashboardPage from '../pages/DashboardPage';
 import Station from '../pages/Station';
 import styles from '../styles/NavBar.module.css';
 import MapGIS from "./MapGIS";
+import SettingsPage from '../pages/SettingsPage';
 
 // Component ส่วนเมนู
 const MenuBar = () => {
@@ -87,7 +88,7 @@ function Navbar() {
           <Route path='/' element={<DashboardPage />} />
           <Route path='/station' element={<Station />} />
           <Route path='/map' element={<MapGIS/>} />
-          <Route path='/settings' element={<div className="text-h1">หน้าการตั้งค่า (Demo)</div>} />
+          <Route path='/settings' element={<SettingsPage />} />
         </Routes>
       </div>
     </div>

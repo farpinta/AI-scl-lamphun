@@ -1,55 +1,108 @@
-/* components/StationTable/StationTable.module.css */
-
+/* กล่องตารางทั้งหมด เพื่อควบคุมไม่ให้หลุดขอบหน้าจอ */
 .container {
   width: 100%;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
 }
 
-.tableHeader {
-  display: grid;
-  grid-template-columns: 2fr 1fr 0.5fr 0.5fr 1fr 1fr;
-  padding: 16px 24px;
-  border-bottom: 2px solid var(--color-border-line);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-text-primary);
+/* 1. กล่องครอบเครื่องมือค้นหาและปุ่ม Add ด้านบนตาราง */
+.tableControls {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  width: 1356px; /* อิงตามความกว้างหลักในดีไซน์ Figma */
+  margin: 0 auto 16px auto;
 }
 
+.searchWrapper {
+  position: relative;
+  width: 300px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8b95a5;
+  font-size: 14px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background-color: #424b57; /* สีเทาอมน้ำเงินตามดีไซน์ใหม่ */
+  border: none;
+  border-radius: 100px;
+  color: #ffffff;
+  outline: none;
+}
+
+.addButton {
+  background-color: #636e72; /* สีปุ่ม Add ในดีไซน์ */
+  color: #ffffff;
+  border: none;
+  padding: 6px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* 2. หัวคอลัมน์ของตาราง (Table Header) */
+.tableHeader {
+  display: flex;
+  width: 1356px;
+  margin: 0 auto 10px auto;
+  padding: 0 24px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+/* 3. กล่องครอบแถวข้อมูลทั้งหมด */
 .tableBody {
   display: flex;
   flex-direction: column;
 }
 
-.dataRow {
-  display: grid;
-  grid-template-columns: 2fr 1fr 0.5fr 0.5fr 1fr 1fr;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--color-border-line);
-  font-size: 14px;
-  color: var(--color-text-primary);
-  align-items: center;
-  transition: background-color 0.2s;
-}
-
-.dataRow:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.iconCell {
+/* 4. แถวข้อมูลแต่ละแถว (ปรับเป็นทรง Capsule ตาม Properties ใน Figma) */
+.stationRow {
+  width: 1356px;                      /* Layout: width จาก Figma */
+  height: 35px;                       /* Layout: height จาก Figma */
+  flex-shrink: 0;                     /* Layout: flex-shrink จาก Figma */
+  border-radius: 100px;               /* Style: border-radius รูปทรงแคปซูลมน */
+  background: #222b3a;                /* Style: โทนสีพื้นหลังแถวแบบ Dark Theme */
+  
   display: flex;
   align-items: center;
-  color: var(--color-text-secondary);
+  margin: 0 auto 10px auto;           /* ระยะห่างด้านล่างแถวละ 10px ตาม Figma */
+  padding: 0 24px;                    /* จัดช่องไฟด้านในแถว */
+  box-sizing: border-box;
 }
 
-/* ปรับระยะให้ตรงกลางสำหรับคอลัมน์ตัวเลขและไอคอน */
-.centerAlign {
-  text-align: center;
-  justify-content: center;
+/* สัดส่วน Layout หกคอลัมน์ */
+.colSetting { width: 5%; display: flex; align-items: center; }
+.colName    { width: 25%; color: #ffffff; font-weight: 500; font-size: 14px; }
+.colTime    { width: 15%; color: #ffffff; font-size: 14px; }
+.colSignal  { width: 8%; display: flex; justify-content: center; font-size: 16px; }
+.colBattery { width: 8%; display: flex; justify-content: center; font-size: 16px; }
+.colWater   { width: 19%; text-align: right; font-weight: 600; font-size: 14px; }
+.colRain    { width: 20%; text-align: right; font-weight: 600; font-size: 14px; }
+
+/* ไอคอนฟันเฟืองรายสถานี */
+.btnSetting {
+  color: #8b95a5;
+  cursor: pointer;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+.btnSetting:hover {
+  color: #ffffff;
 }
 
-.rightAlign {
-  text-align: right;
-  justify-content: flex-end;
-}
+/* คลาสสีสถานะสำหรับข้อมูลตัวเลขและไอคอน */
+.statusCritical, .iconCritical { color: #ff3b30; }
+.statusWarning,  .iconBad      { color: #ffcc00; }
+.statusNormal,   .iconGood     { color: #34c759; }

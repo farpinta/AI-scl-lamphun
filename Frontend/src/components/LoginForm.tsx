@@ -56,45 +56,76 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.imageSection}></div>
+        <div className={styles.loginPage}>
+            <nav className={styles.navbar}>
+                <h1 className={styles.navLogoText}>Water Flow</h1>
+            </nav>
 
-            <div className={styles.formSection}>
-                <h2 className={styles.title}>Login</h2>
-
-                {error && <div className={styles.error}>{error}</div>}
-
-                <form onSubmit={handleSubmit}>
-                    <div className={styles.formGroup}>
-                        <input
-                            type="text"
-                            className={styles.input}
-                            value={identifier}
-                            onChange={(e) => setIdentifier(e.target.value)}
-                            placeholder="Username"
-                            required
-                        />
+            <div className={styles.mainContent}>
+                <div className={styles.brandPanel}>
+                    <div className={styles.brandContainer}>
+                        <div className={styles.brandLogo}>
+                            <img src="/logo.png" alt="Water Flow Logo" className={styles.brandLogoImg} />
+                        </div>
+                        <div className={styles.brandTextBox}>
+                            <h1 className={styles.brandTitle}>Water<br/>Flow</h1>
+                            <p className={styles.brandShadow}>ระบบเฝ้าระวังน้ำ</p>
+                        </div>
                     </div>
+                </div>
 
-                    <div className={styles.formGroup}>
-                        <input
-                            type="password"
-                            className={styles.input}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            required
-                        />
+                <div className={styles.signInPanel}>
+                    <div className={styles.formCard}>
+                        <h2 className={styles.signinTitle}>Sign in</h2>
+
+                        <form onSubmit={handleSubmit} className={styles.formContent}>
+                            {error && <div className={styles.error}>{error}</div>}
+
+                            <div className={styles.fieldsContainer}>
+                                <div className={styles.inputGroup}>
+                                    <label className={styles.inputLabel}>Email</label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            type="text"
+                                            className={styles.input}
+                                            value={identifier}
+                                            onChange={(e) => setIdentifier(e.target.value)}
+                                            placeholder="Username"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label className={styles.inputLabel}>Password</label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            type="password"
+                                            className={styles.input}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Password"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={styles.actionsContainer}>
+                                <button
+                                    type="submit"
+                                    className={styles.button}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Checking...' : 'Sign in'}
+                                </button>
+                                <button type="button" className={styles.forgotPassword}>
+                                    Forgot your password?
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <button 
-                        type="submit" 
-                        className={styles.button}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Checking...' : 'LOGIN'}
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     );
