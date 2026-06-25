@@ -48,6 +48,8 @@ try {
         .use(authRoutes)
         .use(userRoutes)
       )
+
+      .get("*", () => Bun.file("./public/index.html"))
       // รับ Request
       .listen({ 
       port: port, 
