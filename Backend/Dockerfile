@@ -10,8 +10,7 @@ COPY package.json bun.lock ./
 # 2. ลงไลบรารี (ใช้ --production เพื่อไม่เอาเครื่องมือ Dev ติดไปด้วย ช่วยลดขนาด Image และปลอดภัยขึ้น)
 RUN bun install --frozen-lockfile --production
 
-# 3. ก๊อปปี้โค้ดทั้งหมดในโฟลเดอร์ Backend ตามเข้าไป
-COPY . .
+COPY --chown=bun:bun . .
 
 # 4. สลับไปใช้ User ธรรมดาที่ไม่ใช่ Root เพื่อป้องกันโดนแฮกแล้วยึดเครื่อง
 USER bun
