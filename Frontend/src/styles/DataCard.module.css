@@ -1,74 +1,62 @@
-
-
 /* Container หลักของ Card */
 .cardContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  flex: 1; /* ให้ยืดเต็มพื้นที่ flex container */
-  height: 120px;
-  gap: 8px;
-  padding: 20px 24px;
-  
-  background: var(--color-bg-surface);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border-line);
-  
-  /* เส้นสีด้านบน (Default) */
-  border-top: 4px solid var(--color-brand-accent);
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex: 1;
+    min-height: 110px;
+    gap: 8px;
+    padding: 20px 24px;
+    background: var(--color-bg-surface);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-border-line);
+    border-top: 4px solid var(--color-brand-accent);
+    box-sizing: border-box;
 }
 
-/* --- Typography: หัวข้อ --- */
 .title {
-  align-self: stretch;
-  color: var(--color-text-primary);
-  font-family: var(--font-ui); 
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
+    align-self: stretch;
+    color: var(--color-text-primary);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 22px;
 }
 
-/* wrapper สำหรับจัดกลุ่มตัวเลขและหน่วย */
 .valueGroup {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  align-self: stretch;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    align-self: stretch;
 }
 
-/* --- Typography: ตัวเลข --- */
 .value {
-  font-family: var(--font-data); 
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
+    font-family: var(--font-data);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
 }
 
-/* --- Typography: หน่วย --- */
 .unit {
-  font-family: var(--font-ui); 
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
 }
 
-/* --- Themes (OOP Style) --- */
-
-/* Theme: สีส้ม (เตือนภัย/Warning) */
+/* Themes */
 .themeOrange {
-  border-top-color: var(--color-brand-accent);
+    border-top-color: var(--color-brand-accent);
 }
 .textOrange {
-  color: var(--color-brand-accent);
+    color: var(--color-brand-accent);
 }
 
-/* Theme: สีฟ้า (ปกติ/Brand) */
 .themeBlue {
-  border-top-color: var(--color-brand-secondary);
+    border-top-color: var(--color-brand-secondary);
 }
 .textBlue {
-  color: var(--color-brand-secondary);
+    color: var(--color-brand-secondary);
 }

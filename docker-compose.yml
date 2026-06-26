@@ -8,18 +8,24 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   app:
-    build: 
-      context: .              # เปลี่ยน context เป็นที่ Root (.)
-      dockerfile: Dockerfile   # ใช้ Dockerfile ที่รวมร่างไว้ที่ Root
-    
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
-      - ./Backend/.env        # ใช้ไฟล์ .env เดิมของ Backend
+      - ./Backend/.env
     environment:
       DATABASE_URL: "postgresql://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_DATABASE}"
 

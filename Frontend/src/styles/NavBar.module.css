@@ -1,160 +1,182 @@
 /* components/Navbar.module.css */
 
 .navbarContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--color-bg-surface); 
-  padding: 0 40px;
-  width: 100%;
-  height: 80px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* เงาบางๆ ให้ดูลอยขึ้นมา */
-  font-family: var(--font-ui);
-  box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a1f26;
+    padding: 0 40px;
+    width: 100%;
+    height: 80px;
+    border-bottom: 1px solid var(--color-border-line);
+    font-family: var(--font-ui);
+    box-sizing: border-box;
 }
 
 /* 1. Logo */
 .logoGroup {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .logoText {
-  color: var(--color-brand-primary);
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.5px;
+    color: var(--color-text-primary);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
 }
 
 /* 2. Menu Group */
 .menuGroup {
-  display: flex;
-  height: 100%;
-  gap: 32px;
+    display: flex;
+    height: 100%;
+    gap: 8px;
 }
 
 .navItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  height: 100%;
-  padding: 0 16px;
-  border-bottom: 3px solid transparent; 
-  transition: all 0.2s ease;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    height: 100%;
+    padding: 0 20px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .navTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-secondary); /* สีเทาตอนยังไม่เลือก */
-  margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 3px;
 }
 
 .navSubtitle {
-  font-size: 11px;
-  color: var(--color-text-tertiary); 
+    font-size: 11px;
+    color: var(--color-text-tertiary);
 }
 
-/* เมนู Active */
+/* Active state */
 .active {
-  border-bottom: 3px solid var(--color-brand-primary);
+    border-bottom: 3px solid var(--color-brand-secondary);
 }
 
 .active .navTitle {
-  color: var(--color-brand-primary); /* สีน้ำเงินสว่างตอนเลือก */
+    color: var(--color-text-primary);
 }
 
-/* Hover Effect */
-.navItem:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+.active .navSubtitle {
+    color: var(--color-brand-secondary);
 }
+
+/* Hover */
 .navItem:hover .navTitle {
-  color: var(--color-brand-primary);
+    color: var(--color-text-primary);
 }
 
-/* 3. Right Group (Search & Profile) */
+/* 3. Right Group */
 .rightGroup {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 /* Search Box */
 .searchBox {
-  display: flex;
-  align-items: center;
-  background-color: var(--color-bg-page); /* สีเทาอ่อนของพื้นหลัง */
-  border-radius: 40px;
-  padding: 8px 16px;
-  width: 250px;
+    display: flex;
+    align-items: center;
+    background-color: #878889;
+    border-radius: 40px;
+    padding: 8px 16px;
+    width: 280px;
+    border: 1px solid var(--color-border-line);
 }
 
 .searchIcon {
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  margin-right: 8px;
+    color: #111827;
+    font-size: 14px;
+    margin-right: 8px;
 }
 
 .searchInput {
-  background: transparent;
-  border: none;
-  color: var(--color-text-primary);
-  outline: none;
-  font-size: 14px;
-  width: 100%;
-  font-family: var(--font-ui);
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+    font-family: var(--font-ui);
 }
 
 .searchInput::placeholder {
-  color: var(--color-text-tertiary);
+    color: #111827;
 }
 
-/* Profile / Username Button */
+/* Log out Button - white pill */
 .profileBtn {
-  background-color: var(--color-brand-primary);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 40px;
-  padding: 10px 24px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    background-color: #ffffff;
+    color: #111827;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 28px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .profileBtn:hover {
-  background-color: var(--color-brand-secondary);
-  transform: translateY(-1px);
+    background-color: #f3f4f6;
 }
 
 /* Layout Wrapper */
 .layoutContainer {
-  width: 100%;
-  min-height: 100vh;
-  background-color: var(--color-bg-page);
-  box-sizing: border-box;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-page);
+    box-sizing: border-box;
 }
 
 .contentArea {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 24px 40px;
-  box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.contentAreaFullHeight {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
 }
 
 @media (max-width: 1024px) {
-  .searchBox { width: 180px; }
-  .menuGroup { gap: 16px; }
+    .searchBox {
+        width: 180px;
+    }
+    .menuGroup {
+        gap: 4px;
+    }
 }
 
 @media (max-width: 768px) {
-  .navbarContainer { padding: 0 16px; }
-  .navSubtitle { display: none; }
-  .searchBox { display: none; }
+    .navbarContainer {
+        padding: 0 16px;
+    }
+    .navSubtitle {
+        display: none;
+    }
+    .searchBox {
+        display: none;
+    }
 }

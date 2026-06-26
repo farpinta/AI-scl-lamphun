@@ -1,81 +1,120 @@
-
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* --- Brand Colors  --- */
-  --color-brand-primary: #1E40AF;      
-  --color-brand-secondary: #0099FF;
-  --color-brand-accent :#F59E0B;
+    /* --- Brand Colors  --- */
+    --color-brand-primary: #1e40af;
+    --color-brand-secondary: #0099ff;
+    --color-brand-accent: #f59e0b;
 
-  --color-bg-page: #F3F4F6;         
-  --color-bg-surface: #FFFFFF;
-  --color-border-line: #E5E7EB;   
+    --color-bg-page: #1e293b;
+    --color-bg-surface: #383e4a;
+    --color-border-line: rgba(255, 255, 255, 0.08);
 
-  --color-darkBlue:#070F29;
-  --color-darkSlate:#1E293B;
-  --color-brand-deep:#1C398E;
-  /* --- Text Colors --- */
-  --color-text-primary: #111827;     
-  --color-text-secondary: #6B7280;
-  --color-text-tertiary:#9CA3AF;
-  --color-text-disabled:#D1D5DB;
-  --color-text-onBrand:#FFFFFF;  
+    --color-darkBlue: #070f29;
+    --color-darkSlate: #1e293b;
+    --color-brand-deep: #1c398e;
+    /* --- Text Colors --- */
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-tertiary: #64748b;
+    --color-text-disabled: #334155;
+    --color-text-onBrand: #ffffff;
 
-  /* --- Status Colors  --- */
-  --color-status-normal: #10B981;    
-  --color-status-warning: #FFAE00;  
-  --color-status-critical: #EF4444;
-  --color-status-device-offline: #6B7280;
-  
-  --color-graf-rain:rgba(68, 181, 194, 0.62);
-  --color-graf-waterLevel:#155DFC;
+    /* --- Status Colors  --- */
+    --color-status-normal: #10b981;
+    --color-status-warning: #ffae00;
+    --color-status-critical: #ef4444;
+    --color-status-device-offline: #6b7280;
 
-  /* --- Typography (Fonts) --- */
-  --font-ui: 'Inter', system-ui, sans-serif;
-  --font-data: 'IBM Plex Mono', monospace;
+    --color-graf-rain: rgba(68, 181, 194, 0.62);
+    --color-graf-waterLevel: #155dfc;
 
-  /* --- Shadows (Effect Styles) --- */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* --- Typography (Fonts) --- */
+    --font-ui: "Inter", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", monospace;
 
-  /*---Gradient Color*/
-  --brand-secondary-blend: linear-gradient(90deg, #1E40AF 0%, #000 100%);
-  --brand-panel-gradient: conic-gradient(from 0deg at 50% 50%, #1C398E -51.92deg, #1E293B 57.44deg, #1D293D 162.69deg, #1C398E 308.08deg, #1E293B 417.44deg);
+    /* --- Shadows (Effect Styles) --- */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    /*---Gradient Color*/
+    --brand-secondary-blend: linear-gradient(90deg, #1e40af 0%, #000 100%);
+    --brand-panel-gradient: conic-gradient(
+        from 0deg at 50% 50%,
+        #1c398e -51.92deg,
+        #1e293b 57.44deg,
+        #1d293d 162.69deg,
+        #1c398e 308.08deg,
+        #1e293b 417.44deg
+    );
 }
 
 /* 3. Global Reset */
 body {
-  margin: 0;
-  background-color: var(--color-bg-page);
-  color: var(--color-text-primary);
-  font-family: var(--font-ui); 
-  -webkit-font-smoothing: antialiased;
+    margin: 0;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
 }
 
 /* 4. Utility Classes */
-.text-h1 { font-size: 24px; font-weight: 700; line-height: 1.25; }
-.text-h2 { font-size: 20px; font-weight: 600; line-height: 1.25; }
-.text-h3 { font-size: 16px; font-weight: 500; line-height: 1.25; }
-.text-default { font-size: 14px; font-weight: 400; line-height: 1.5; }
-.text-caption { font-size: 12px; font-weight: 400; line-height: 1.5; color: var(--color-text-secondary); }
+.text-h1 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+.text-h2 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+.text-h3 {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+}
+.text-default {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+.text-caption {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+}
 
 /* --- Data Font Utilities --- */
-.text-data-lg { font-family: var(--font-data); font-size: 28px; font-weight: 700; }
-.text-data-md { font-family: var(--font-data); font-size: 14px; font-weight: 400; }
-.text-data-sm { font-family: var(--font-data); font-size: 12px; font-weight: 400; }
+.text-data-lg {
+    font-family: var(--font-data);
+    font-size: 28px;
+    font-weight: 700;
+}
+.text-data-md {
+    font-family: var(--font-data);
+    font-size: 14px;
+    font-weight: 400;
+}
+.text-data-sm {
+    font-family: var(--font-data);
+    font-size: 12px;
+    font-weight: 400;
+}
 
 /* --- Layout Utilities --- */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .card {
-  background-color: var(--color-bg-surface);
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border-line);
+    background-color: var(--color-bg-surface);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border-line);
 }
